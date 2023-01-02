@@ -1,13 +1,13 @@
-// import propTypes from 'prop-types';
+import propTypes from 'prop-types';
 import css from './ImageGalleryItem.module.css';
 
-export const ImageGalleryItem = ({ filter, handleChange }) => (
-  <li className={css.ImageGalleryItem}>
+export const ImageGalleryItem = ({ onclick, image }) => (
+  <li className={css.ImageGalleryItem} key={image.id} onClick={onclick}>
     <img src="" alt="" className={css.ImageGalleryItem_image} />
   </li>
 );
 
-// Filter.propTypes = {
-//   filter: propTypes.string.isRequired,
-//   handleChange: propTypes.func.isRequired,
-// };
+ImageGalleryItem.propTypes = {
+  image: propTypes.object.isRequired,
+  onclick: propTypes.func.isRequired,
+};

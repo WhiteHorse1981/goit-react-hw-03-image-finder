@@ -5,10 +5,3 @@
     padding-bottom: 24px;
 }
 
-.Loader {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: black;
-}
