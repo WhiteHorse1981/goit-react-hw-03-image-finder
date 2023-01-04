@@ -1,26 +1,16 @@
-// import propTypes from 'prop-types';
+import propTypes from 'prop-types';
 import css from './Modal.module.css';
-// import * as basicLightbox from 'basiclightbox';
 
-export const Modal = () => (
-  <div className={css.Overlay}>
+export const Modal = ({ srcImg, altImg, handleClose }) => (
+  <div className={css.Overlay} onClick={handleClose}>
     <div className={css.Modal}>
-      <img src="" alt="" />
-      <p>
-        Your first lightbox with just a few lines of code. Yes, it's really that
-        simple.
-      </p>
+      <img src={srcImg} alt={altImg} />
     </div>
   </div>
 );
 
-// const instance = basicLightbox.create(`
-//     <div class="modal">
-//         <p>
-//             Your first lightbox with just a few lines of code.
-//             Yes, it's really that simple.
-//         </p>
-//     </div>
-// `);
-
-// instance.show();
+Modal.propTypes = {
+  srcImg: propTypes.string.isRequired,
+  altImg: propTypes.string.isRequired,
+  handleClose: propTypes.func,
+};
