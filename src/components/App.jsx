@@ -26,7 +26,7 @@ export class App extends Component {
   };
 
   async componentDidMount() {
-    window.addEventListener('keydown', this.handleCloseModalEsc);
+    window.addEventListener('keyEscape', this.handleCloseModalEsc);
 
     // try {
     //   const data = await getImages();
