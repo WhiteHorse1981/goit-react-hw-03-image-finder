@@ -7,57 +7,83 @@ import { Button } from './Button/Button';
 // import { Modal } from './Modal/Modal';
 import { getImages } from './Api/fetchImages';
 
+const FETCH_STATUS = {
+  Idle: 'idle',
+  Pending: 'pending',
+  Resolved: 'resolved',
+  Rejected: 'rejected',
+};
+
 export class App extends Component {
   state = {
     images: [],
-    isLoading: false,
+    status: FETCH_STATUS.Idle,
+    // isLoading: false,
     submitQuery: '',
     page: 1,
   };
 
-  async componentDidMount() {
-    try {
-      const data = await getImages();
-      this.setState({ images: data.hits });
-    } catch (error) {
-      console.log(error.message);
-    }
-  }
+  // async componentDidMount() {
+  //   try {
+  //     const data = await getImages();
+  //     this.setState({ page: data.page });
+  //   } catch (error) {
+  //     console.log(error.message);
+  //   }
+  // }
 
   async componentDidUpdate(_, prevState) {
-    if (this.state.submitQuery !== prevState.submitQuery) {
-      this.setState({ isLoading: true });
+    const { submitQuery, page } = this.state;
+
+    if (
+      this.state.submitQuery !== prevState.submitQuery ||
+      this.state.page !== prevState.page
+    ) {
+      this.setState({ status: FETCH_STATUS.Pending });
       try {
-        const data = await getImages(this.state.page, this.state.submitQuery);
-        this.setState({
-          images: data.hits,
-          page: 1,
-          isLoading: false,
-        });
+        const data = await getImages(page, submitQuery);
+        this.setState(prevState => ({
+          images: page > 1 ? [...prevState.images, ...data.hits] : data.hits,
+          page,
+          status: FETCH_STATUS.Resolved,
+        }));
       } catch (error) {
-        console.log(error.message);
+        this.setState({ status: FETCH_STATUS.Rejected });
       }
     }
   }
 
   handleSubmit = inputQuery => {
     this.setState({
+      // images: [],
       page: 1,
       submitQuery: inputQuery,
     });
   };
 
+  hendleLoadMore = () => {
+    this.setState(prev => ({ page: prev.page + 1 }));
+  };
+
   render() {
-    const { images } = this.state;
+    const { images, status, page } = this.state;
+    const { handleSubmit, hendleLoadMore } = this;
     return (
       <div className={css.App}>
-        <Searchbar onSubmit={this.handleSubmit} />
+        <Searchbar onSubmit={handleSubmit} />
 
-        {images.length > 0 ? <ImageGallery images={images} /> : null}
+        {status === FETCH_STATUS.Rejected && (
+          <p>Your request has been rejected</p>
+        )}
 
-        <Loader />
+        {(status === FETCH_STATUS.Resolved || page > 1) && (
+          <ImageGallery images={images} />
+        )}
+        {status === FETCH_STATUS.Pending && <Loader />}
 
-        <Button onLoadMore={() => {}} />
+        {status === FETCH_STATUS.Resolved && (
+          <Button onLoadImg={hendleLoadMore} />
+        )}
       </div>
     );
   }
