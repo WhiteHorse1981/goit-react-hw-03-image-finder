@@ -1,4 +1,4 @@
-// import propTypes from 'prop-types';
+import propTypes from 'prop-types';
 import css from './Button.module.css';
 
 export const Button = ({ onLoadImg }) => (
@@ -6,3 +6,7 @@ export const Button = ({ onLoadImg }) => (
     Load more
   </button>
 );
+
+Button.propTypes = {
+  onLoadImg: propTypes.func,
+};
