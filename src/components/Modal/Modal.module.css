@@ -12,6 +12,15 @@
 }
 
 .Modal {
+    position: relative;
     max-width: calc(100vw - 48px);
     max-height: calc(100vh - 24px);
+}
+
+.imgAlt {
+  position: absolute;
+  bottom: 0;
+  left: 10px;
+  font-size: 15px;
+  font-weight: 600;
 }

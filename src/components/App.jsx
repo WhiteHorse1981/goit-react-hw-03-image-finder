@@ -5,6 +5,7 @@ import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Loader } from './Loader/Loader';
 import { Button } from './Button/Button';
 import { Modal } from './Modal/Modal';
+import { RequestFailed } from './RequestFailed/RequestFailed';
 import { getImages } from './Api/fetchImages';
 
 const FETCH_STATUS = {
@@ -24,9 +25,10 @@ export class App extends Component {
     activeImgModal: '',
     activeAltModal: '',
     amountItemPage: 12,
+    totalPage: null,
   };
 
-  async componentDidMount() {
+  componentDidMount() {
     window.addEventListener('keydown', this.handleCloseModalEsc);
   }
 
@@ -40,11 +42,15 @@ export class App extends Component {
       this.setState({ status: FETCH_STATUS.Pending });
       try {
         const data = await getImages(page, submitQuery, amountItemPage);
-        console.log(data);
+        if (data.hits.length === 0) {
+          this.setState({ status: FETCH_STATUS.Rejected });
+          return;
+        }
         this.setState(prevState => ({
-          images: page > 1 ? [...prevState.images, ...data.hits] : data.hits,
+          images: [...prevState.images, ...data.hits],
           page,
           status: FETCH_STATUS.Resolved,
+          totalPage: Math.ceil(data.totalHits / amountItemPage),
         }));
       } catch (error) {
         this.setState({ status: FETCH_STATUS.Rejected });
@@ -54,7 +60,7 @@ export class App extends Component {
 
   handleSubmit = inputQuery => {
     this.setState({
-      // images: [],
+      images: [],
       page: 1,
       submitQuery: inputQuery,
     });
@@ -87,24 +93,22 @@ export class App extends Component {
   };
 
   render() {
-    const { images, status, page, isOpenModal } = this.state;
+    const { images, status, page, isOpenModal, totalPage } = this.state;
     const { handleSubmit, hendleLoadMore, hendleOpenModal } = this;
     return (
       <div className={css.App}>
         <Searchbar onSubmit={handleSubmit} />
 
-        {status === FETCH_STATUS.Rejected && (
-          <p>Your request has been rejected</p>
-        )}
+        {status === FETCH_STATUS.Rejected && <RequestFailed />}
 
         {(status === FETCH_STATUS.Resolved || page > 1) && (
           <ImageGallery images={images} onImageClick={hendleOpenModal} />
         )}
         {status === FETCH_STATUS.Pending && <Loader />}
 
-        {status === FETCH_STATUS.Resolved && (
-          <Button onLoadImg={hendleLoadMore} />
-        )}
+        {status === FETCH_STATUS.Resolved &&
+          page !== totalPage &&
+          images.length !== 0 && <Button onLoadImg={hendleLoadMore} />}
 
         {isOpenModal ? (
           <Modal
