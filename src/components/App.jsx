@@ -16,28 +16,22 @@ const FETCH_STATUS = {
 
 export class App extends Component {
   state = {
-    images: [],
+    images: null,
     status: FETCH_STATUS.Idle,
     submitQuery: '',
     page: 1,
     isOpenModal: false,
     activeImgModal: '',
     activeAltModal: '',
+    amountItemPage: 12,
   };
 
   async componentDidMount() {
     window.addEventListener('keyEscape', this.handleCloseModalEsc);
-
-    // try {
-    //   const data = await getImages();
-    //   this.setState({ page: data.page });
-    // } catch (error) {
-    //   console.log(error.message);
-    // }
   }
 
   async componentDidUpdate(_, prevState) {
-    const { submitQuery, page } = this.state;
+    const { submitQuery, page, amountItemPage } = this.state;
 
     if (
       this.state.submitQuery !== prevState.submitQuery ||
@@ -45,7 +39,8 @@ export class App extends Component {
     ) {
       this.setState({ status: FETCH_STATUS.Pending });
       try {
-        const data = await getImages(page, submitQuery);
+        const data = await getImages(page, submitQuery, amountItemPage);
+        console.log(data);
         this.setState(prevState => ({
           images: page > 1 ? [...prevState.images, ...data.hits] : data.hits,
           page,
