@@ -27,7 +27,7 @@ export class App extends Component {
   };
 
   async componentDidMount() {
-    window.addEventListener('keyEscape', this.handleCloseModalEsc);
+    window.addEventListener('keydown', this.handleCloseModalEsc);
   }
 
   async componentDidUpdate(_, prevState) {
