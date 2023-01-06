@@ -7,9 +7,9 @@ const pixabayApi = axios.create({
   },
 });
 
-export const getImages = async (page, inputValue, amountItemPage) => {
+export const getImages = async (page, inputValue, requestedPictures) => {
   const { data } = await pixabayApi.get(
-    `?q=${inputValue}&page=${page}&image_type=photo&orientation=horizontal&per_page=${amountItemPage}`
+    `?q=${inputValue}&page=${page}&image_type=photo&orientation=horizontal&per_page=${requestedPictures}`
   );
   return data;
 };

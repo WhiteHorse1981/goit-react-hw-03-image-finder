@@ -20,12 +20,12 @@ export class App extends Component {
     status: FETCH_STATUS.Idle,
     submitQuery: '',
     page: 1,
-    amountItemPage: 12,
-    totalItemPage: null,
+    requestedPictures: 12,
+    uploadedPictures: null,
   };
 
   async componentDidUpdate(_, prevState) {
-    const { submitQuery, page, amountItemPage } = this.state;
+    const { submitQuery, page, requestedPictures } = this.state;
 
     if (
       this.state.submitQuery !== prevState.submitQuery ||
@@ -33,7 +33,7 @@ export class App extends Component {
     ) {
       this.setState({ status: FETCH_STATUS.Pending });
       try {
-        const data = await getImages(page, submitQuery, amountItemPage);
+        const data = await getImages(page, submitQuery, requestedPictures);
         if (data.hits.length === 0) {
           this.setState({ status: FETCH_STATUS.Rejected });
           return;
@@ -42,7 +42,7 @@ export class App extends Component {
           images: page > 1 ? [...prevState.images, ...data.hits] : data.hits,
           page,
           status: FETCH_STATUS.Resolved,
-          totalItemPage: Math.ceil(data.totalHits / amountItemPage),
+          uploadedPictures: data.hits.length,
         }));
       } catch (error) {
         this.setState({ status: FETCH_STATUS.Rejected });
@@ -62,7 +62,8 @@ export class App extends Component {
   };
 
   render() {
-    const { images, status, page, totalItemPage } = this.state;
+    const { images, status, page, uploadedPictures, requestedPictures } =
+      this.state;
     const { handleSubmit, hendleLoadMore } = this;
     return (
       <div className={css.App}>
@@ -75,9 +76,10 @@ export class App extends Component {
         )}
         {status === FETCH_STATUS.Pending && <Loader />}
 
-        {status === FETCH_STATUS.Resolved &&
-          page !== totalItemPage &&
-          images.length !== 0 && <Button onLoadImg={hendleLoadMore} />}
+        {uploadedPictures >= requestedPictures &&
+          status === FETCH_STATUS.Resolved && (
+            <Button onLoadImg={hendleLoadMore} />
+          )}
       </div>
     );
   }
