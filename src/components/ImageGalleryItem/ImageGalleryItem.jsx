@@ -20,7 +20,6 @@ export class ImageGalleryItem extends Component {
           <img
             src={image.webformatURL}
             alt={image.tags}
-            name={image.largeImageURL}
             className={css.ImageGalleryItem_image}
           />
         </li>
